@@ -20,3 +20,17 @@ A Retrieval-Augmented Generation chatbot that answers disease/symptom questions 
 - pypdf for PDF text extraction
 
 ## Project Structure
+
+- `data/pdfs/` — Uploaded PDFs stored here
+- `vectorstore/faiss_index/` — FAISS index + metadata (auto-generated)
+- `pdf_loader.py` — Reads PDFs, splits into chunks, tracks page numbers
+- `embeddings.py` — Converts text chunks into vectors
+- `vector_store.py` — Builds/loads FAISS index, similarity search
+- `qa_chain.py` — RAG logic: retrieve + Gemini + citations
+- `app.py` — Streamlit UI
+- `requirements.txt` — Python dependencies
+- `.env` — API key (not committed)
+
+## Setup Instructions
+
+1. Clone this repository:
