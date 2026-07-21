@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+.env
+vectorstore/faiss_index/
+data/pdfs/*.pdf
+.streamlit/
