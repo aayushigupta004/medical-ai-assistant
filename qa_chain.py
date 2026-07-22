@@ -2,9 +2,17 @@ import os
 from dotenv import load_dotenv
 from google import genai
 from vector_store import search
+import streamlit as st
 
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
+
+if not api_key:
+    try:
+        api_key = st.secrets["GEMINI_API_KEY"]
+    except Exception:
+        api_key = None
+
 client = genai.Client(api_key=api_key)
 
 DISCLAIMER = "\n\n⚠️ This chatbot is for educational purposes only and is not a substitute for professional medical advice."
