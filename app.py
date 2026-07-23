@@ -88,8 +88,21 @@ st.markdown("""
     }
 
     .stAlert {
-        border-radius: 10px;
-    }
+    border-radius: 10px;
+}
+
+.sidebar-footer {
+    position: fixed;
+    left: 15px;
+    bottom: 15px;
+    width: 240px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 14px;
+    border-top: 1px solid #333;
+    padding-top: 12px;
+    background-color: #0f0f0f;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -100,19 +113,32 @@ if "index_built" not in st.session_state:
     st.session_state.index_built = False
 
 # --- PDF Upload Section (collapsible) ---
-with st.expander("📄 Upload a Medical PDF", expanded=not st.session_state.index_built):
-    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf", label_visibility="collapsed")
+with st.sidebar:
+    st.title("📄 Upload PDF")
+
+    uploaded_file = st.file_uploader(
+        "Choose a Medical PDF",
+        type="pdf"
+    )
 
     if uploaded_file is not None:
         save_path = os.path.join("data/pdfs", uploaded_file.name)
+
         with open(save_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
 
-        if st.button("Add this PDF to Knowledge Base"):
-            with st.spinner("Reading and indexing PDF... this may take a moment"):
+        if st.button("Add PDF"):
+            with st.spinner("Reading and indexing PDF..."):
                 add_pdf_to_index(save_path)
             st.session_state.index_built = True
-            st.success(f"Added: {uploaded_file.name}")
+            st.markdown("""
+    <div class="sidebar-footer">
+        <b>🩺 Medical AI Assistant</b><br>
+        Version 1.0.0<br><br>
+        Developed by<br>
+        <b>Ayushi Gupta</b>
+    </div>
+    """, unsafe_allow_html=True)
 
 # --- ChatGPT-style greeting, shown only when chat is empty ---
 if len(st.session_state.chat_history) == 0:
