@@ -19,10 +19,6 @@ DISCLAIMER = "\n\n⚠️ This chatbot is for educational purposes only and is no
 
 
 def build_prompt(question, retrieved_chunks):
-    """
-    Builds a strict prompt: answer ONLY from the given context,
-    describe symptoms/disease info only, never diagnose.
-    """
     context_text = "\n\n".join(
         [f"[{c['source_file']} - Page {c['page_number']}]: {c['text']}" for c in retrieved_chunks]
     )
@@ -46,19 +42,26 @@ Answer:"""
 
 
 def ask_question(question, top_k=3):
-    """
-    Full RAG pipeline: retrieve chunks, ask Gemini, attach citations + disclaimer.
-    """
     retrieved_chunks = search(question, top_k=top_k)
-
     prompt = build_prompt(question, retrieved_chunks)
 
-    response = client.models.generate_content(
-        model="gemini-3-flash-preview",
-        contents=prompt
-    )
+    import time
+    max_retries = 3
+    answer = None
 
-    answer = response.text
+    for attempt in range(max_retries):
+        try:
+            response = client.models.generate_content(
+                model="gemini-3-flash-preview",
+                contents=prompt
+            )
+            answer = response.text
+            break
+        except Exception:
+            if attempt < max_retries - 1:
+                time.sleep(3)
+            else:
+                answer = "Sorry, the AI service is temporarily busy. Please try asking again in a moment."
 
     sources_used = sorted(set(f"{c['source_file']} (page {c['page_number']})" for c in retrieved_chunks))
     citation_text = "\n\n📚 Sources: " + ", ".join(sources_used)
