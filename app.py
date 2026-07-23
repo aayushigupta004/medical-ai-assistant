@@ -10,30 +10,48 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------- Custom CSS for a ChatGPT/Gemini-like look ----------
+# ---------- Custom CSS for a ChatGPT-like landing look ----------
 st.markdown("""
 <style>
-    /* Hide default Streamlit branding */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
 
-    /* Overall page background */
     .stApp {
         background-color: #0f0f0f;
     }
 
-    /* Center content like ChatGPT's column width */
     .main .block-container {
-        max-width: 800px;
-        padding-top: 2rem;
+        max-width: 720px;
+        padding-top: 4rem;
         padding-bottom: 6rem;
     }
 
-    /* Title styling */
-    h1 {
-        font-size: 1.8rem !important;
-        font-weight: 600 !important;
+    /* Centered greeting text, ChatGPT style */
+    .greeting {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 600;
+        color: #ececec;
+        margin-top: 8vh;
+        margin-bottom: 2rem;
+    }
+
+    .subgreeting {
+        text-align: center;
+        color: #9b9b9b;
+        font-size: 0.95rem;
+        margin-bottom: 2.5rem;
+    }
+
+    /* Pill-shaped chat input, like ChatGPT's "Ask anything" box */
+    [data-testid="stChatInput"] {
+        background-color: #1e1e1e;
+        border-radius: 28px;
+        border: 1px solid #333;
+        padding: 0.3rem 0.5rem;
+    }
+    [data-testid="stChatInput"] textarea {
         color: #ececec !important;
     }
 
@@ -41,54 +59,39 @@ st.markdown("""
     [data-testid="stChatMessage"] {
         background-color: transparent;
         padding: 1rem 0;
-        border-bottom: 1px solid #2a2a2a;
+        border-bottom: 1px solid #222;
     }
-
-    /* User message text */
     [data-testid="stChatMessage"] p {
         font-size: 0.95rem;
         line-height: 1.6;
         color: #ececec;
     }
 
-    /* Chat input box styling */
-    [data-testid="stChatInput"] {
-        background-color: #1e1e1e;
-        border-radius: 12px;
-        border: 1px solid #333;
-    }
-
-    /* Upload box styling */
-    [data-testid="stFileUploader"] {
+    /* Upload expander styling */
+    [data-testid="stExpander"] {
         background-color: #1a1a1a;
-        border-radius: 12px;
-        padding: 1rem;
+        border-radius: 14px;
         border: 1px solid #2a2a2a;
+        margin-bottom: 1.5rem;
     }
 
-    /* Buttons */
     .stButton button {
         background-color: #2563eb;
         color: white;
-        border-radius: 8px;
+        border-radius: 20px;
         border: none;
-        padding: 0.5rem 1.2rem;
+        padding: 0.5rem 1.4rem;
         font-weight: 500;
     }
     .stButton button:hover {
         background-color: #1d4ed8;
     }
 
-    /* Success/info boxes */
     .stAlert {
         border-radius: 10px;
     }
 </style>
 """, unsafe_allow_html=True)
-
-# ---------- Header ----------
-st.markdown("### 🩺 Medical AI Assistant")
-st.caption("Ask about disease symptoms based on your uploaded medical documents.")
 
 # --- Session state setup ---
 if "chat_history" not in st.session_state:
@@ -96,7 +99,7 @@ if "chat_history" not in st.session_state:
 if "index_built" not in st.session_state:
     st.session_state.index_built = False
 
-# --- PDF Upload Section (collapsible so chat feels like the main focus) ---
+# --- PDF Upload Section (collapsible) ---
 with st.expander("📄 Upload a Medical PDF", expanded=not st.session_state.index_built):
     uploaded_file = st.file_uploader("Choose a PDF file", type="pdf", label_visibility="collapsed")
 
@@ -111,8 +114,10 @@ with st.expander("📄 Upload a Medical PDF", expanded=not st.session_state.inde
             st.session_state.index_built = True
             st.success(f"Added: {uploaded_file.name}")
 
-if not st.session_state.index_built:
-    st.info("Upload a PDF above and click 'Add this PDF to Knowledge Base' to get started.")
+# --- ChatGPT-style greeting, shown only when chat is empty ---
+if len(st.session_state.chat_history) == 0:
+    st.markdown('<div class="greeting">🩺 Medical AI Assistant</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subgreeting">Ask about disease symptoms based on your uploaded medical documents.</div>', unsafe_allow_html=True)
 
 # --- Chat message display ---
 for role, message in st.session_state.chat_history:
@@ -120,7 +125,7 @@ for role, message in st.session_state.chat_history:
     with st.chat_message(role, avatar=avatar):
         st.markdown(message)
 
-# --- Chat input (fixed at bottom, like ChatGPT) ---
+# --- Chat input (fixed at bottom, pill-shaped) ---
 user_question = st.chat_input("Ask about symptoms, e.g. 'What are the symptoms of dengue?'")
 
 if user_question:
