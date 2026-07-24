@@ -131,14 +131,16 @@ with st.sidebar:
             with st.spinner("Reading and indexing PDF..."):
                 add_pdf_to_index(save_path)
             st.session_state.index_built = True
-            st.markdown("""
-    <div class="sidebar-footer">
-        <b>🩺 Medical AI Assistant</b><br>
-        Version 1.0.0<br><br>
-        Developed by<br>
-        <b>Ayushi Gupta</b>
-    </div>
-    """, unsafe_allow_html=True)
+            st.success(f"Added: {uploaded_file.name}")
+
+    st.markdown("""
+<div class="sidebar-footer">
+    <b>🩺 Medical AI Assistant</b><br>
+    Version 1.0.0<br><br>
+    Developed by<br>
+    <b>Ayushi Gupta</b>
+</div>
+""", unsafe_allow_html=True)
 
 # --- ChatGPT-style greeting, shown only when chat is empty ---
 if len(st.session_state.chat_history) == 0:
