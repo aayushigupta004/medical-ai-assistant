@@ -122,6 +122,7 @@ with st.sidebar:
     )
 
     if uploaded_file is not None:
+        os.makedirs("data/pdfs", exist_ok=True)
         save_path = os.path.join("data/pdfs", uploaded_file.name)
 
         with open(save_path, "wb") as f:
